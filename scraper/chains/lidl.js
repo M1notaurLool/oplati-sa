@@ -8,7 +8,7 @@
 // 2. Záloha: kategórie potravín (/h/...) a akciové stránky (/c/.../a...) majú rovnaký JSON
 //    v atribúte data-grid-data. Stránkovanie: ?offset=48.
 // Kód beží v Node aj v prehliadači – potrebuje len http.text(url) a http.json(url).
-import { decodeEntities, guessCategory, localDate, matchKey, norm, parseSize } from '../lib/normalize.js';
+import { decodeEntities, guessCategory, localDate, matchKey, norm, parseSize, safeImage } from '../lib/normalize.js';
 
 const SITES = /** @type {const} */ ({
   SK: { host: 'https://www.lidl.sk', foodRoot: '/c/jedlo-a-napoje/s10068374', locale: 'sk_SK' },
@@ -147,6 +147,7 @@ export function gridItemToOffer(item, ctx) {
     tryIt: null,
     matchKey: matchKey(name, size),
     sourceUrl: path ? ctx.host + path : null,
+    image: safeImage(item.image),
   };
 }
 

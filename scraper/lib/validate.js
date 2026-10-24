@@ -33,5 +33,6 @@ export function invalidReason(o) {
   if (o.note != null && !str(o.note, 80)) return 'note';
   if (o.priceWithoutCard != null && !money(o.priceWithoutCard)) return 'priceWithoutCard';
   if (o.requiresCard != null && typeof o.requiresCard !== 'boolean') return 'requiresCard';
+  if (o.image != null && !(typeof o.image === 'string' && o.image.length <= 500 && /^https:\/\/[^\s"'<>`\\]+$/.test(o.image))) return 'image';
   return null;
 }

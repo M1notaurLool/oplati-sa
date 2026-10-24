@@ -176,3 +176,16 @@ export function tidyName(s) {
   t = t.replace(/(\d)\s?(g|kg|ml|l|ks)\b/gi, (_, n, u) => `${n} ${u.toLowerCase()}`);
   return t.charAt(0).toLocaleUpperCase('sk') + t.slice(1);
 }
+
+/**
+ * Obrázok produktu z webu reťazca – len bezpečná absolútna https adresa (≤ 500 znakov), inak null.
+ * Apka obrázok len zobrazí z pôvodného webu (nekopírujeme ho).
+ * @param {unknown} url
+ * @returns {string | null}
+ */
+export function safeImage(url) {
+  if (typeof url !== 'string') return null;
+  const u = url.trim();
+  if (u.length > 500 || !/^https:\/\/[a-z0-9.-]+\.[a-z]{2,}(?:[/?#]|$)/i.test(u) || /[\s"'<>`\\]/.test(u)) return null;
+  return u;
+}

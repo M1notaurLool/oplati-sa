@@ -14,7 +14,7 @@
 // Pozor: pri rýchlom sťahovaní (≈40 strán za 2 min) web vráti 403 – preto 5 s pauza medzi stranami.
 // Ceny online obchodu sa zhodujú s letákom hypermarketov (Clubcard ceny platia v obchode aj online).
 // Leták na tesco.sk je len obrázok/PDF, preto berieme online obchod.
-import { guessCategory, localDate, matchKey, norm, parsePrice, parseSize, tidyName } from '../lib/normalize.js';
+import { guessCategory, localDate, matchKey, norm, parsePrice, parseSize, safeImage, tidyName } from '../lib/normalize.js';
 
 const HOST = 'https://potravinydomov.itesco.sk';
 const PAGE_SIZE = 48;
@@ -119,6 +119,7 @@ export function tescoProductToOffer(p, today) {
     tryIt: null,
     matchKey: matchKey(name, size),
     sourceUrl: id ? `${HOST}/groceries/sk-SK/products/${id}` : null,
+    image: safeImage(p.defaultImageUrl),
   };
 }
 

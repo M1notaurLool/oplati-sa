@@ -252,6 +252,7 @@ export function offersFromLeaflet(pages, ctx) {
         tryIt: null,
         matchKey: matchKey(name, size),
         sourceUrl: `${HOST}/${ctx.slug}/page/${page.n}`,
+        image: null,
       });
     }
   }

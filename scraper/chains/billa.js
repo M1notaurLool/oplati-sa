@@ -14,7 +14,7 @@
 // Navyše má price.lowestPrice = najnižšia cena za 30 dní pred akciou (Omnibus). Keď je nižšia než
 // prečiarknutá cena, skutočná zľava je menšia (a pod akciovou cenou dokonca žiadna) – apka to tak označí.
 // (Na billa.sk lowestPrice nedáva zmysel – napr. 0,46 € pri cene 9,90 € – preto ho tam ignorujeme.)
-import { guessCategory, localDate, matchKey, norm, shiftDate, tidyName, wednesdayWeek, isoWeek } from '../lib/normalize.js';
+import { guessCategory, localDate, matchKey, norm, safeImage, shiftDate, tidyName, wednesdayWeek, isoWeek } from '../lib/normalize.js';
 
 const SK_HOST = 'https://www.billa.sk';
 const CZ_HOST = 'https://www.billa.cz';
@@ -173,6 +173,7 @@ export function billaProductToOffer(product, ctx) {
     tryIt: null,
     matchKey: matchKey(name, size),
     sourceUrl: ctx.host && typeof product.slug === 'string' && /^[a-z0-9-]+$/.test(product.slug) ? `${ctx.host}/produkt/${product.slug}` : null,
+    image: Array.isArray(product.images) ? safeImage(product.images[0]) : null,
   };
 }
 
