@@ -35,7 +35,8 @@ git config user.name >nul 2>nul || git config user.name "M1notaurLool"
 git config user.email >nul 2>nul || git config user.email "M1notaurLool@users.noreply.github.com"
 git fetch -q origin main || goto :nofetch
 git reset -q origin/main
-git checkout -q origin/main -- .github .gitattributes tools
+rem subory v priecinku nahradi aktualnou verziou z GitHubu (vlastne subory mimo projektu ostanu)
+git checkout -q -- .
 git branch -q --set-upstream-to=origin/main main
 echo       Ak sa otvori okno GitHubu, prihlas sa (len raz - Git si to zapamata).
 git push --dry-run -q origin main || goto :noauth
