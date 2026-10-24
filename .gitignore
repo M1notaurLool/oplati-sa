@@ -7,3 +7,6 @@ dist/
 *.log
 # surové a prevedené dáta z prehliadača – do repozitára ide len výsledok v app/data
 data/raw/
+
+# pracovné kópie agentov
+.claude/
