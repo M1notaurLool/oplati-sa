@@ -80,8 +80,9 @@ ich je len ~220. Napr. Haribo „16,90 Kč z 24,90“ – pred dvoma týždňami
    aj keď je tvoj počítač vypnutý. Čo sa nepodarí stiahnuť (niektoré reťazce blokujú dátové centrá), ostane z posledného behu,
    kým akcia platí.
 2. **Tvoj počítač** (záloha pre reťazce, ktoré GitHub blokujú) – Plánovač úloh vo Windows spustí `tools/aktualizuj.ps1`
-   o 7:10 a 15:10 (alebo hneď po zapnutí PC) a výsledok pošle na GitHub. Nastavenie raz:
-   `powershell -ExecutionPolicy Bypass -File tools\naplanuj.ps1` (potrebuje Node.js 22+ a Git).
+   o 7:10 a 15:10 (alebo hneď po zapnutí PC) a výsledok pošle na GitHub. Nastavenie raz: **dvojklik na
+   `nastav-automaticku-aktualizaciu.cmd`** – doinštaluje Node.js a Git (Windows sa opýta na povolenie), prepojí priečinok
+   s GitHubom (raz sa prihlásiš), naplánuje úlohu a hneď spraví prvú aktualizáciu. Záznam behu: `data\raw\aktualizacia.log`.
 3. **Ručne cez prehliadač** – keď web chce overenie človekom: stiahnuť surové dáta do `data/raw/<zdroj>.raw.json`, potom
    `node scraper/from-raw.js data/raw/*.raw.json` a `node scraper/import.js data/raw/*.json`.
 

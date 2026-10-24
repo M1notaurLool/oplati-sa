@@ -1,5 +1,5 @@
 ﻿# Oplatí sa – nastaví Plánovač úloh vo Windows, aby sa akcie aktualizovali samy každý deň.
-# Spusti raz:  powershell -ExecutionPolicy Bypass -File tools\naplanuj.ps1
+# Spúšťa ho nastav-automaticku-aktualizaciu.cmd (dvojklik). Ručne: powershell -ExecutionPolicy Bypass -File tools\naplanuj.ps1
 # Zrušenie:    Unregister-ScheduledTask -TaskName 'Oplati sa - aktualizacia akcii' -Confirm:$false
 #
 # Úloha beží o 7:10 a 15:10. Keď je počítač v tom čase vypnutý, spustí sa hneď po zapnutí.
