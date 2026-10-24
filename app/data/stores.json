@@ -1,0 +1,8 @@
+{
+  "meta": {
+    "generatedAt": null,
+    "source": "OpenStreetMap (© prispievatelia OpenStreetMap, ODbL)",
+    "note": "Prázdne, kým nebeží `npm run stores`. Apka zatiaľ hľadá predajne v Mapách Google."
+  },
+  "stores": []
+}

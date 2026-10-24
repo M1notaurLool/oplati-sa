@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oplatí sa</title>
+<!-- preview:start -->
+<meta name="description" content="Skutočné zľavy nad 25 % v Kauflande, Lidli, Bille, Tescu a Alberte. Slovensko aj Česko, každé ráno aktualizované.">
+<meta name="theme-color" content="#0d6657">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-vvt4KWwuNr51XfE5m+hzeNEGhiOfZzG97ccfqGsPwvE='; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://overpass-api.de https://overpass.private.coffee; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Oplatí sa">
+<!-- preview:end -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400..700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="appbar">
+  <div class="appbar__inner">
+    <a class="brand" href="#akcie" data-tab-link="deals">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <path class="logo-tag" d="M4 7.5A3.5 3.5 0 0 1 7.5 4h9.6a3.5 3.5 0 0 1 2.47 1.02l8.4 8.4a3.5 3.5 0 0 1 0 4.95l-9.6 9.6a3.5 3.5 0 0 1-4.95 0l-8.4-8.4A3.5 3.5 0 0 1 4 17.1Z"/>
+        <circle class="logo-hole" cx="10" cy="10" r="2.2"/>
+        <circle class="logo-sticker" cx="18.5" cy="18.5" r="6"/>
+        <path class="logo-mark-line" d="M16.2 21.2l4.6-5.4"/>
+        <circle class="logo-mark" cx="16.4" cy="16.6" r="1.1"/>
+        <circle class="logo-mark" cx="20.6" cy="20.4" r="1.1"/>
+      </svg>
+      <span class="brand__name">Oplatí sa</span>
+    </a>
+    <nav class="tabbar" aria-label="Sekcie">
+      <button type="button" data-tab="deals">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5.5V11l9.3 9.3a1.6 1.6 0 0 0 2.3 0l5.7-5.7a1.6 1.6 0 0 0 0-2.3L11 3H5.5A2.5 2.5 0 0 0 3 5.5Z"/><circle cx="7.5" cy="7.5" r="1.3"/></svg>
+        <span>Akcie</span>
+      </button>
+      <button type="button" data-tab="try">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9l-4.7 1.5L12 15l-1.8-4.5L5.5 9l4.7-1.4Z"/><path d="M18 15l.8 2 2 .8-2 .7-.8 2-.8-2-2-.7 2-.8Z"/></svg>
+        <span>Vyskúšať</span>
+      </button>
+      <button type="button" data-tab="stores">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11A6.5 6.5 0 0 1 18.5 10c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></svg>
+        <span>Kde nakúpiť</span>
+      </button>
+      <button type="button" data-tab="list">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h2l2.2 10.2a1.5 1.5 0 0 0 1.5 1.2h8a1.5 1.5 0 0 0 1.4-1.1L20.5 8H6.3"/><circle cx="10" cy="20" r="1.2"/><circle cx="17" cy="20" r="1.2"/></svg>
+        <span>Zoznam</span>
+        <span class="badge" id="list-count" hidden></span>
+      </button>
+    </nav>
+    <div class="seg" role="group" aria-label="Krajina">
+      <button type="button" data-country="SK" aria-pressed="true">SK</button>
+      <button type="button" data-country="CZ" aria-pressed="false">CZ</button>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+  <p class="sample-note" id="sample-note" hidden></p>
+  <section class="summary" id="summary" aria-live="polite"></section>
+
+  <section class="filters" id="filters" aria-label="Filtre">
+    <div class="filters__row">
+      <div class="seg" role="group" aria-label="Kedy nakupuješ">
+        <button type="button" data-when="today" aria-pressed="true">Dnes</button>
+        <button type="button" data-when="week" aria-pressed="false">Najbližších 7 dní</button>
+      </div>
+      <label class="search" for="q">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
+        <span class="visually-hidden">Hľadať produkt</span>
+        <input id="q" type="search" placeholder="Hľadať, napr. maslo" autocomplete="off" enterkeyhint="search">
+      </label>
+    </div>
+    <div class="chips chips--scroll" id="chain-chips" role="group" aria-label="Reťazce"></div>
+    <div class="chips chips--scroll" id="cat-chips" role="group" aria-label="Kategórie"></div>
+    <details class="more" id="more">
+      <summary>Ďalšie filtre <span id="more-summary"></span></summary>
+      <div class="more__body">
+        <div class="range">
+          <label for="min">Minimálna reálna zľava <output id="min-out" for="min">25 %</output></label>
+          <input id="min" type="range" min="20" max="60" step="5" value="25">
+        </div>
+        <label class="switch" for="nocard">
+          <input id="nocard" type="checkbox">
+          <span>Len akcie bez vernostnej karty<small>Skryje ceny, ktoré platia len s Lidl Plus, Kaufland Card a podobne.</small></span>
+        </label>
+        <label class="switch" for="inflated">
+          <input id="inflated" type="checkbox">
+          <span>Ukázať aj nafúknuté zľavy<small>Leták hlási veľkú zľavu, ale za posledných 30 dní bol produkt lacnejší.</small></span>
+        </label>
+      </div>
+    </details>
+  </section>
+
+  <section id="view"></section>
+
+  <footer class="foot" id="foot"></footer>
+</main>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

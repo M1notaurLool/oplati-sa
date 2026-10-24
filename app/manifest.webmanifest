@@ -1,0 +1,18 @@
+{
+  "name": "Oplatí sa – skutočné zľavy na potraviny",
+  "short_name": "Oplatí sa",
+  "description": "Akcie nad 25 % v Kauflande, Lidli, Bille, Tescu a Alberte. Slovensko aj Česko.",
+  "lang": "sk",
+  "start_url": "./#akcie",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef2f1",
+  "theme_color": "#0d6657",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

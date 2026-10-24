@@ -1,0 +1,15 @@
+{
+  "name": "oplati-sa",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Skutočné zľavy nad 25 % v Kauflande, Lidli, Bille, Tescu a Alberte – SK aj CZ.",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test",
+    "start": "npx --yes serve app -l 5173",
+    "update": "node scraper/run.js",
+    "stores": "node scraper/stores.js",
+    "build:preview": "node tools/build-preview.js"
+  }
+}
