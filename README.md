@@ -3,7 +3,7 @@
 Web apka (PWA), ktorá ukáže **len skutočné zľavy na potraviny od 25 %** v Kauflande, Lidli, Bille, Tescu (SK) a Alberte (CZ), povie, **kde sa dnes alebo tento týždeň oplatí nakúpiť**, ukáže **najbližšiu predajňu** a čo sa oplatí **vyskúšať**. Funguje na mobile aj počítači, dá sa pridať na plochu ako appka.
 
 > Stav (24. 10. 2026): **skutočné ceny** z Lidla (SK, CZ), Billy (SK, CZ), Tesca (SK) a Albertu (CZ, tento aj budúci týždeň) – spolu ~3 700 akcií.
-> Kaufland zatiaľ nie: jeho web vyžaduje overenie „nie som robot“ a to apka neobchádza.
+> Kaufland len ručne: jeho web vyžaduje overenie „nie som robot“, preto akcie uložíš záložkou v prehliadači (pozri nižšie).
 
 ## Čo apka vie
 
@@ -69,7 +69,7 @@ Každý reťazec vracia pole objektov v rovnakom tvare (`Offer` v `app/js/deals.
 | Billa CZ | API webu `/api/product-discovery/products?inPromotion=true` + najnižšia cena za 30 dní | ✅ |
 | Tesco SK | akcie online obchodu potravinydomov.itesco.sk (Clubcard ceny označené) | ✅ pomaly (web pri rýchlom sťahovaní vráti 403) |
 | Albert CZ | PDF letáku z letaky.albert.cz → texty s polohou → cenovky (overené vytlačenou zľavou a cenou za 100 g) | ✅ (treba `pdfjs-dist`) |
-| Kaufland SK/CZ | web chráni Cloudflare „Overte, že ste človek“ | ❌ len ručne v prehliadači |
+| Kaufland SK/CZ | web chráni Cloudflare „Overte, že ste človek“ → záložka `kaufland-zalozka.html` uloží akcie z otvorenej stránky | ✋ raz týždenne klik v prehliadači, zvyšok sám |
 
 **Billa CZ ukazuje, prečo apka počíta „skutočnú“ zľavu:** z ~3 400 akcií hlási −25 % a viac 1 800, ale voči najnižšej cene za 30 dní
 ich je len ~220. Napr. Haribo „16,90 Kč z 24,90“ – pred dvoma týždňami stálo 17,90.
@@ -83,7 +83,11 @@ ich je len ~220. Napr. Haribo „16,90 Kč z 24,90“ – pred dvoma týždňami
    o 7:10 a 15:10 (alebo hneď po zapnutí PC) a výsledok pošle na GitHub. Nastavenie raz: **dvojklik na
    `nastav-automaticku-aktualizaciu.cmd`** – doinštaluje Node.js a Git (Windows sa opýta na povolenie), prepojí priečinok
    s GitHubom (raz sa prihlásiš), naplánuje úlohu a hneď spraví prvú aktualizáciu. Záznam behu: `data\raw\aktualizacia.log`.
-3. **Ručne cez prehliadač** – keď web chce overenie človekom: stiahnuť surové dáta do `data/raw/<zdroj>.raw.json`, potom
+3. **Kaufland záložkou** – web Kauflandu pustí len človeka. Otvor `kaufland-zalozka.html`, potiahni tlačidlo do záložiek
+   a raz za týždeň na stránkach akcií Kauflandu (overenie potvrdíš sám) klikni na záložku. Uloží akcie z otvorenej stránky
+   do Stiahnutých súborov ako `kaufland-SK-….raw.json`; najbližšia aktualizácia na PC (alebo dvojklik na `aktualizuj-teraz.cmd`)
+   ich pridá do apky. Akcia prejde, len keď stará cena, nová cena a zľava sedia.
+4. **Ručne cez prehliadač** (iné reťazce) – surové dáta do `data/raw/<zdroj>.raw.json`, potom
    `node scraper/from-raw.js data/raw/*.raw.json` a `node scraper/import.js data/raw/*.json`.
 
 Reálna zľava sa počíta od najnižšej ceny za 30 dní – od reťazca (Billa CZ, Albert ▼) alebo z vlastnej histórie

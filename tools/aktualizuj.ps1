@@ -23,6 +23,18 @@ try {
   if (-not (Test-Path (Join-Path $root 'node_modules\pdfjs-dist'))) {
     Krok 'Inštalácia pdfjs-dist' { npm install --no-save --no-package-lock --no-audit --no-fund pdfjs-dist@4.10.38 }
   }
+  # Kaufland zo záložky (kaufland-zalozka.html): súbory kaufland-*.raw.json zo Stiahnutých súborov
+  $downloads = (New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path
+  $kDir = Join-Path $root 'data\raw\kaufland'
+  New-Item -ItemType Directory -Force -Path $kDir | Out-Null
+  $fresh = Get-ChildItem -Path $downloads -Filter 'kaufland-*.raw.json' -ErrorAction SilentlyContinue
+  if ($fresh) {
+    $fresh | Move-Item -Destination $kDir -Force
+    $week = Get-ChildItem -Path $kDir -Filter 'kaufland-*.raw.json' | Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-8) }
+    Krok 'Kaufland zo záložky' { node scraper/from-raw.js $week.FullName }
+    $converted = $week | ForEach-Object { $_.FullName -replace '\.raw\.json$', '.json' }
+    Krok 'Import Kauflandu' { node scraper/import.js $converted }
+  }
   Krok 'Stiahnuť akcie' { node scraper/run.js }
   node scraper/stores.js   # predajne raz za týždeň; chyba tu nevadí
   git add app/data data/price-history.json

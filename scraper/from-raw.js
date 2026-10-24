@@ -1,5 +1,5 @@
 // @ts-check
-// Prevedie surové dáta stiahnuté v prehliadači (vyhľadávanie Lidlu, API Billy, akcie online obchodu Tesca, texty PDF letáku Albertu)
+// Prevedie surové dáta stiahnuté v prehliadači (vyhľadávanie Lidlu, API Billy, akcie online obchodu Tesca, texty PDF letáku Albertu, záložka Kauflandu)
 // na ponuky vo formáte apky: data/raw/<zdroj>.raw.json → data/raw/<zdroj>.json.
 // Použitie: node scraper/from-raw.js data/raw/lidl-SK.raw.json …  potom: node scraper/import.js data/raw/*.json
 import { readFile, writeFile } from 'node:fs/promises';
@@ -7,6 +7,7 @@ import { offersFromSearch } from './chains/lidl.js';
 import { billaProductToOffer } from './chains/billa.js';
 import { tescoProductToOffer } from './chains/tesco.js';
 import { offersFromLeaflet } from './chains/albert.js';
+import { offersFromPage } from './chains/kaufland.js';
 import { localDate } from './lib/normalize.js';
 
 /** @param {any} raw */
@@ -32,6 +33,7 @@ function convert(raw) {
     }
     return [...out.values()];
   }
+  if (chain === 'kaufland') return offersFromPage(raw);
   if (chain === 'albert') return offersFromLeaflet(raw.pages, { validFrom: raw.validFrom, validTo: raw.validTo, slug: raw.slug });
   throw new Error(`Pre ${chain} prevod zo surových dát nie je`);
 }

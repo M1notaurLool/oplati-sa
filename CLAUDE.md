@@ -18,4 +18,5 @@ Web apka (PWA) so skutočnými zľavami na potraviny od 25 % v SK a CZ. Komuniku
 - `npm run stores` – predajne z OpenStreetMap (raz za týždeň, `--force` na vynútenie)
 - `npm run build:preview` – jeden HTML súbor na ukážku v `dist/`
 - `tools/aktualizuj.ps1` / `tools/naplanuj.ps1` – aktualizácia z Windows PC a jej naplánovanie (Plánovač úloh)
+- `node tools/build-bookmarklet.js` – vyrobí `kaufland-zalozka.html` zo zdroja `tools/kaufland-zalozka.src.js` (Kaufland len ručne, záložkou)
 - Albert potrebuje na čítanie PDF `npm install --no-save --no-package-lock pdfjs-dist@4.10.38` (len scraper)

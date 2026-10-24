@@ -372,3 +372,30 @@ test('Albert: najnižšia cena za 30 dní a platnosť z titulky', async () => {
   assert.deepEqual(leafletDates([{ n: 1, w: 1, h: 1, items: [['Od středy 30. 12. do 5. 1. 2027', 245, 7, 11, 114]] }]), { validFrom: '2026-12-30', validTo: '2027-01-05' });
   assert.equal(leafletDates([{ n: 1, w: 1, h: 1, items: [] }]), null);
 });
+
+// --- Kaufland: súbor zo záložky (ručne v prehliadači, po overení človekom) ---
+test('Kaufland: dlaždice zo záložky – overené ceny, karta, platnosť', async () => {
+  const { parseTile, offersFromPage, kauflandDates } = await import('../scraper/chains/kaufland.js');
+  const rama = parseTile('Rama\nRastlinný tuk na pečenie\n400 g\n1 kg = 4,98\n-33 %\n2,99\n1,99');
+  assert.deepEqual([rama.name, rama.price, rama.regularPrice, rama.size, rama.requiresCard], ['Rama Rastlinný tuk na pečenie', 1.99, 2.99, { amount: 400, unit: 'g' }, false]);
+  const karta = parseTile('Pilos\nMaslo 82 %\n250 g\n1 kg = 5,56\n-40 %\n2,29\n1,59\n1,39\ns Kaufland Card');
+  assert.deepEqual([karta.price, karta.regularPrice, karta.priceWithoutCard, karta.requiresCard], [1.39, 2.29, 1.59, true]);
+  assert.equal(parseTile('Banány\n1 kg\n-20 %\n1,49\n0,89'), null, 'vytlačená zľava nesedí s cenami');
+  assert.equal(parseTile('Jogurt\n1,29'), null, 'bez starej ceny nie je zľava');
+  assert.equal(parseTile('-25 %\n3,99\n2,99'), null, 'bez názvu');
+
+  assert.deepEqual(kauflandDates(['Ponuka platí od 23. 10. do 29. 10. 2026'], 'SK', '2026-10-25T10:00:00Z'), { validFrom: '2026-10-23', validTo: '2026-10-29' });
+  assert.deepEqual(kauflandDates([], 'SK', '2026-10-25T10:00:00Z'), { validFrom: '2026-10-22', validTo: '2026-10-28' }, 'SK: štvrtok–streda');
+  assert.deepEqual(kauflandDates([], 'CZ', '2026-10-25T10:00:00Z'), { validFrom: '2026-10-21', validTo: '2026-10-27' }, 'CZ: streda–utorok');
+
+  const offers = offersFromPage({
+    source: 'kaufland-SK', url: 'https://www.kaufland.sk/aktualna-ponuka/prehlad.html', fetchedAt: '2026-10-25T10:00:00Z', dates: ['platí od 23. 10. do 29. 10. 2026'],
+    items: [
+      { text: 'Rama\nRastlinný tuk na pečenie\n400 g\n1 kg = 4,98\n-33 %\n2,99\n1,99', href: 'https://www.kaufland.sk/aktualna-ponuka/rama.html' },
+      { text: 'Rama\nRastlinný tuk na pečenie\n400 g\n1 kg = 4,98\n-33 %\n2,99\n1,99', href: 'javascript:alert(1)' },
+      { text: 'Banány\n1 kg\n-20 %\n1,49\n0,89' },
+    ],
+  });
+  assert.equal(offers.length, 1, 'duplicitná dlaždica a neoverená cena vypadnú');
+  assert.deepEqual([offers[0].chain, offers[0].country, offers[0].category, offers[0].validTo, offers[0].sourceUrl], ['kaufland', 'SK', 'mliecne', '2026-10-29', 'https://www.kaufland.sk/aktualna-ponuka/rama.html']);
+});

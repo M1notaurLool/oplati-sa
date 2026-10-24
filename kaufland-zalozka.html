@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oplatí sa – záložka pre Kaufland</title>
+<style>
+  :root { --bg: #f6f7f5; --card: #fff; --text: #17201c; --muted: #5b6660; --accent: #0f6b4f; --line: #dfe4e0; color-scheme: light dark; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #111613; --card: #1a211d; --text: #e8eee9; --muted: #a3ada7; --accent: #4fc597; --line: #2c3530; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 680px; margin: 0 auto; padding: 32px 16px 48px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  p.lead { color: var(--muted); margin: 0 0 24px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+  .btn { display: inline-block; padding: 12px 18px; border-radius: 999px; background: var(--accent); color: #fff; font-weight: 700; text-decoration: none; cursor: grab; }
+  @media (prefers-color-scheme: dark) { .btn { color: #0b1410; } }
+  ol { padding-left: 1.2em; margin: 0; } li { margin: 6px 0; }
+  kbd { border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 0 6px; font-size: .9em; }
+  .muted { color: var(--muted); font-size: .92rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Záložka „Oplatí sa → Kaufland“</h1>
+  <p class="lead">Kaufland nepustí automatické sťahovanie, preto akcie uložíš ty jedným klikom priamo z ich webu.</p>
+
+  <div class="card">
+    <p><strong>1. Pridaj si záložku (raz):</strong> zobraz panel záložiek (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>) a toto tlačidlo naň potiahni myšou.</p>
+    <p><a class="btn" href="javascript:(()%20%3D%3E%20%7B%20const%20host%20%3D%20location.hostname%3B%20const%20country%20%3D%20%2F(%5E%7C%5C.)kaufland%5C.cz%24%2F.test(host)%20%3F%20'CZ'%20%3A%20%2F(%5E%7C%5C.)kaufland%5C.sk%24%2F.test(host)%20%3F%20'SK'%20%3A%20null%3B%20if%20(!country)%20%7B%20alert('Oplat%C3%AD%20sa%3A%20otvor%20najprv%20akcie%20na%20kaufland.sk%20alebo%20kaufland.cz%20a%20na%20z%C3%A1lo%C5%BEku%20klikni%20tam.')%3B%20return%3B%20%7D%20const%20PRICE%20%3D%20%2F%5Cd%2B%5B.%2C%5D%5Cd%7B2%7D%2Fg%3B%20const%20count%20%3D%20(t)%20%3D%3E%20(t.match(PRICE)%20%7C%7C%20%5B%5D).length%3B%20const%20nameish%20%3D%20(t)%20%3D%3E%20t.split('%5Cn').some((l)%20%3D%3E%20%2F%5Cp%7BL%7D%7B4%2C%7D%2Fu.test(l)%20%26%26%20!%2Fkaufland%20card%7C%25%2Fi.test(l))%3B%20const%20cands%20%3D%20%5B%5D%3B%20for%20(const%20el%20of%20document.querySelectorAll('body%20*'))%20%7B%20if%20(!el.children.length)%20continue%3B%20const%20raw%20%3D%20el.textContent%20%7C%7C%20''%3B%20if%20(raw.length%20%3C%208%20%7C%7C%20raw.length%20%3E%201500%20%7C%7C%20count(raw)%20%3C%202)%20continue%3B%20if%20(!(el.querySelector('img')%20%7C%7C%20el.matches('a%2Carticle%2Cli')))%20continue%3B%20const%20t%20%3D%20el.innerText%20%7C%7C%20''%3B%20if%20(t.length%20%3E%20700%20%7C%7C%20count(t)%20%3C%202%20%7C%7C%20!nameish(t))%20continue%3B%20cands.push(el)%3B%20%7D%20const%20tiles%20%3D%20cands.filter((el)%20%3D%3E%20!cands.some((o)%20%3D%3E%20o%20!%3D%3D%20el%20%26%26%20el.contains(o)))%3B%20if%20(!tiles.length)%20%7B%20alert('Oplat%C3%AD%20sa%3A%20na%20tejto%20str%C3%A1nke%20som%20nena%C5%A1iel%20akcie.%20Otvor%20str%C3%A1nku%20s%20akciami%2C%20nechaj%20ju%20cel%C3%BA%20na%C4%8D%C3%ADta%C5%A5%20(posu%C5%88%20sa%20nadol)%20a%20klikni%20znova.')%3B%20return%3B%20%7D%20const%20parts%20%3D%20(el)%20%3D%3E%20%7B%20const%20out%20%3D%20%5B%5D%3B%20const%20walk%20%3D%20document.createTreeWalker(el%2C%20NodeFilter.SHOW_TEXT%2C%20%7B%20acceptNode%3A%20(n)%20%3D%3E%20(%2F%5E(SCRIPT%7CSTYLE%7CNOSCRIPT)%24%2F.test(n.parentElement%3F.tagName%20%7C%7C%20'')%20%3F%202%20%3A%201)%20%7D)%3B%20for%20(let%20n%20%3D%20walk.nextNode()%3B%20n%20%26%26%20out.length%20%3C%2080%3B%20n%20%3D%20walk.nextNode())%20%7B%20const%20s%20%3D%20n.nodeValue.replace(%2F%5Cs%2B%2Fg%2C%20'%20').trim()%3B%20if%20(s)%20out.push(s.slice(0%2C%20200))%3B%20%7D%20return%20out%3B%20%7D%3B%20const%20items%20%3D%20tiles.map((el)%20%3D%3E%20(%7B%20text%3A%20el.innerText.trim().slice(0%2C%20700)%2C%20parts%3A%20parts(el)%2C%20href%3A%20(el.matches('a%5Bhref%5D')%20%3F%20el%20%3A%20el.querySelector('a%5Bhref%5D')%20%7C%7C%20el.closest('a%5Bhref%5D'))%3F.href%20%7C%7C%20null%2C%20img%3A%20el.querySelector('img%5Balt%5D')%3F.alt%3F.slice(0%2C%20200)%20%7C%7C%20null%2C%20html%3A%20el.outerHTML.slice(0%2C%201500)%2C%20%7D))%3B%20const%20dates%20%3D%20(document.body.innerText%20%7C%7C%20'')%20.split('%5Cn')%20.map((l)%20%3D%3E%20l.trim())%20.filter((l)%20%3D%3E%20l.length%20%3C%20160%20%26%26%20%2F%5Cd%7B1%2C2%7D%5C.%5Cs%3F%5Cd%7B1%2C2%7D%5C.%2F.test(l)%20%26%26%20%2Fplat%7Cod%20%7Cdo%20%7C%E2%80%93%7C-%2Fi.test(l))%20.slice(0%2C%2040)%3B%20const%20raw%20%3D%20%7B%20source%3A%20%60kaufland-%24%7Bcountry%7D%60%2C%20kind%3A%20'kaufland-page'%2C%20url%3A%20location.href%2C%20title%3A%20document.title%2C%20fetchedAt%3A%20new%20Date().toISOString()%2C%20dates%2C%20items%20%7D%3B%20const%20a%20%3D%20document.createElement('a')%3B%20a.href%20%3D%20URL.createObjectURL(new%20Blob(%5BJSON.stringify(raw)%5D%2C%20%7B%20type%3A%20'application%2Fjson'%20%7D))%3B%20a.download%20%3D%20%60kaufland-%24%7Bcountry%7D-%24%7BDate.now()%7D.raw.json%60%3B%20document.body.appendChild(a)%3B%20a.click()%3B%20a.remove()%3B%20alert(%60Oplat%C3%AD%20sa%3A%20ulo%C5%BEen%C3%BDch%20%24%7Bitems.length%7D%20akci%C3%AD%20z%20tejto%20str%C3%A1nky%20(s%C3%BAbor%20%24%7Ba.download%7D%20v%20Stiahnut%C3%BDch%20s%C3%BAboroch).%20Pokra%C4%8Duj%20%C4%8Fal%C5%A1ou%20kateg%C3%B3riou%20alebo%20hotovo.%60)%3B%20%7D)()%3B">Oplatí sa → Kaufland</a></p>
+    <p class="muted">Kliknutie tu na stránke nič neurobí – záložka funguje až na webe Kauflandu.</p>
+  </div>
+
+  <div class="card">
+    <p><strong>2. Raz za týždeň</strong> (SK leták od štvrtka, CZ od stredy):</p>
+    <ol>
+      <li>Otvor <strong>kaufland.sk → Aktuálna ponuka</strong> (alebo kaufland.cz → Aktuální nabídka). Ak web chce overenie „nie som robot“, potvrď ho.</li>
+      <li>Otvor kategóriu (napr. Ovocie a zelenina), posuň sa až dole, aby sa načítali všetky akcie, a klikni na záložku.</li>
+      <li>To isté pre ďalšie kategórie, ktoré chceš mať v apke. Každé kliknutie uloží jeden súbor do <em>Stiahnutých súborov</em>.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <p><strong>3. Hotovo.</strong> Pri najbližšej automatickej aktualizácii (7:10 a 15:10) si počítač súbory vezme, pridá akcie do apky a pošle ich na GitHub. Hneď: dvojklik na <code>aktualizuj-teraz.cmd</code>.</p>
+    <p class="muted">Záložka číta len akcie z otvorenej stránky – nič ďalšie nesťahuje ani neodosiela. Akciu pridá len vtedy, keď stará cena, nová cena a zľava navzájom sedia.</p>
+  </div>
+</main>
+</body>
+</html>
