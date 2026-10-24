@@ -23,6 +23,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: main   # vždy najnovší stav (aj dáta, ktoré medzitým uložil iný beh), nie commit, ktorý beh spustil
       - uses: actions/setup-node@v5
         with:
           node-version: 22
