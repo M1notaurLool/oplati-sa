@@ -20,7 +20,7 @@ const OLD = /^(\d{1,4})(?:,(\d{2}|-))\/$/;
 const PCT = /^-(\d{1,2})$/;
 const INT = /^\d{1,4}(,-)?$/;
 const DEC = /^(\d{2}|-)$/;
-export const NONFOOD = /lampion|kost[yý]m|kniha|knížk|knizk|samolep|svíčk|svick|dekor|hrač|hrac|tričk|trick|ponožk|ponozk|polštář|polstar|ručník|rucnik|hrnek|talíř|talir|pánev|panev|baterie|žárovk|zarovk|led\b|náramk|naramk|čelenk|celenk|tetování|tetovani|kanvic|konvic|rychlovarn|hrnc|hrnč|panvic|stolič|stolic|lampa|vankúš|vankus|uterák|uterak|obliečk|obliecka|deka\b/i;
+export const NONFOOD = /lampion|kost[yý]m|kniha|knížk|knizk|samolep|svíčk|svick|dekor|hrač|hrac|tričk|trick|ponožk|ponozk|polštář|polstar|ručník|rucnik|hrnek|talíř|talir|pánev|panev|baterie|žárovk|zarovk|led\b|náramk|naramk|čelenk|celenk|tetování|tetovani|kanvic|konvic|rychlovarn|hrnc|hrnč|panvic|stolič|stolic|lampa|vankúš|vankus|uterák|uterak|obliečk|obliecka|deka\b|fritéz|fritez|krájač|krajac|držiak|drziak|taburet|lavic|rolák|rolak|esmara|livarno|parkside|silvercrest|crivit|lupilu|sensiplast|podložk|podlozk|okrasn|výhrevn|vyhrevn|\b[A-Z]{2,3}-\d{3,}/i;
 
 /** @param {string} s */
 const num = (s) => Number(String(s).replace(/\s/g, '').replace(',', '.'));

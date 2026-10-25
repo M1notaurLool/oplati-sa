@@ -3,8 +3,10 @@ name: Aktualizácia akcií
 
 on:
   schedule:
-    - cron: '17 4 * * *'      # denne ~5:17 SEČ / 6:17 SELČ (GitHub počíta v UTC)
-    - cron: '47 14 * * 2,3'   # utorok a streda poobede – vtedy vychádzajú nové letáky
+    # GitHub plánované behy občas vynechá alebo oneskorí, preto 3× denne (časy v UTC)
+    - cron: '17 4 * * *'      # ráno ~5:17 SEČ
+    - cron: '43 10 * * *'     # na obed
+    - cron: '47 15 * * *'     # poobede (v utorok a stredu vychádzajú nové letáky)
   workflow_dispatch:          # tlačidlo „Run workflow“ na ručné spustenie
   push:
     branches: [main]

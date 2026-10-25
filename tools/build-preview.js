@@ -27,7 +27,8 @@ const bundle = MODULES.map((file) => {
 
 const json = (p) => JSON.stringify(JSON.parse(readFileSync(app(p), 'utf8'))).replace(/</g, '\\u003c');
 const html = readFileSync(app('index.html'), 'utf8');
-const css = readFileSync(app('styles.css'), 'utf8');
+// písmo pre ceny vložené priamo (ukážka je jeden súbor)
+const css = readFileSync(app('styles.css'), 'utf8').replace(/url\(['"]?(fonts\/[^'")]+\.woff2?)['"]?\)/g, (_, f) => `url(data:font/${f.endsWith('2') ? 'woff2' : 'woff'};base64,${readFileSync(app(f)).toString('base64')})`);
 
 const title = html.match(/<title>[\s\S]*?<\/title>/)[0];
 const head = html.match(/<head>([\s\S]*?)<\/head>/)[1].replace(/<!-- preview:start -->[\s\S]*?<!-- preview:end -->/, '');
