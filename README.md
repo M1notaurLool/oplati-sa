@@ -2,8 +2,8 @@
 
 Web apka (PWA), ktorá ukáže **len skutočné zľavy na potraviny od 25 %** v Kauflande, Lidli, Bille, Tescu (SK) a Alberte (CZ), povie, **kde sa dnes alebo tento týždeň oplatí nakúpiť**, ukáže **najbližšiu predajňu** a čo sa oplatí **vyskúšať**. Funguje na mobile aj počítači, dá sa pridať na plochu ako appka.
 
-> Stav (24. 10. 2026): **skutočné ceny** z Lidla (SK, CZ), Billy (SK, CZ), Tesca (SK) a Albertu (CZ, tento aj budúci týždeň) – spolu ~3 700 akcií.
-> Kaufland len ručne: jeho web vyžaduje overenie „nie som robot“, preto akcie uložíš záložkou v prehliadači (pozri nižšie).
+> Stav (25. 10. 2026): **skutočné ceny** zo všetkých reťazcov – Lidl, Billa, Kaufland (SK, CZ), Tesco (SK), Albert (CZ) – spolu ~5 600 akcií,
+> obnovujú sa samy každý deň (GitHub Actions) a záložne z PC.
 
 ## Čo apka vie
 
@@ -69,7 +69,7 @@ Každý reťazec vracia pole objektov v rovnakom tvare (`Offer` v `app/js/deals.
 | Billa CZ | API webu `/api/product-discovery/products?inPromotion=true` + najnižšia cena za 30 dní | ✅ |
 | Tesco SK | akcie online obchodu potravinydomov.itesco.sk (Clubcard ceny označené) | ✅ pomaly (web pri rýchlom sťahovaní vráti 403) |
 | Albert CZ | PDF letáku z letaky.albert.cz → texty s polohou → cenovky (overené vytlačenou zľavou a cenou za 100 g) | ✅ (treba `pdfjs-dist`) |
-| Kaufland SK/CZ | web chráni Cloudflare „Overte, že ste človek“ → záložka `kaufland-zalozka.html` uloží akcie z otvorenej stránky | ✋ raz týždenne klik v prehliadači, zvyšok sám |
+| Kaufland SK/CZ | verejný PDF leták z leaflets.kaufland.com (API `endpoints.leaflets.schwarz/v4/flyer`, identifikátor `SK_sk_KDZ_1020_SK<týždeň>-LFT` / `CZ_cs_KDZ_4310_CZ<týždeň>-LFT`) → cenovky overené zľavou a cenou za kg; ceny s Kaufland Card XTRA označené | ✅ (treba `pdfjs-dist`) |
 
 **Billa CZ ukazuje, prečo apka počíta „skutočnú“ zľavu:** z ~3 400 akcií hlási −25 % a viac 1 800, ale voči najnižšej cene za 30 dní
 ich je len ~220. Napr. Haribo „16,90 Kč z 24,90“ – pred dvoma týždňami stálo 17,90.
@@ -83,7 +83,7 @@ ich je len ~220. Napr. Haribo „16,90 Kč z 24,90“ – pred dvoma týždňami
    o 7:10 a 15:10 (alebo hneď po zapnutí PC) a výsledok pošle na GitHub. Nastavenie raz: **dvojklik na
    `nastav-automaticku-aktualizaciu.cmd`** – doinštaluje Node.js a Git (Windows sa opýta na povolenie), prepojí priečinok
    s GitHubom (raz sa prihlásiš), naplánuje úlohu a hneď spraví prvú aktualizáciu. Záznam behu: `data\raw\aktualizacia.log`.
-3. **Kaufland záložkou** – web Kauflandu pustí len človeka. Otvor `kaufland-zalozka.html`, potiahni tlačidlo do záložiek
+3. **Kaufland záložkou** (záloha, ak by leták nešiel) – web Kauflandu pustí len človeka. Otvor `kaufland-zalozka.html`, potiahni tlačidlo do záložiek
    a raz za týždeň na stránkach akcií Kauflandu (overenie potvrdíš sám) klikni na záložku. Uloží akcie z otvorenej stránky
    do Stiahnutých súborov ako `kaufland-SK-….raw.json`; najbližšia aktualizácia na PC (alebo dvojklik na `aktualizuj-teraz.cmd`)
    ich pridá do apky. Akcia prejde, len keď stará cena, nová cena a zľava sedia.

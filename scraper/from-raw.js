@@ -7,7 +7,7 @@ import { offersFromSearch } from './chains/lidl.js';
 import { billaProductToOffer } from './chains/billa.js';
 import { tescoProductToOffer } from './chains/tesco.js';
 import { offersFromLeaflet } from './chains/albert.js';
-import { offersFromPage } from './chains/kaufland.js';
+import { offersFromPage, offersFromKauflandLeaflet } from './chains/kaufland.js';
 import { localDate } from './lib/normalize.js';
 
 /** @param {any} raw */
@@ -32,6 +32,10 @@ function convert(raw) {
       if (o && !out.has(o.id)) out.set(o.id, o);
     }
     return [...out.values()];
+  }
+  if (chain === 'kaufland' && raw.kind === 'kaufland-leaflet') {
+    const flyerUrl = `https://leaflets.kaufland.com/${country === 'SK' ? 'sk-SK' : 'cz-CZ'}/${raw.id}`;
+    return offersFromKauflandLeaflet(raw.pages, { country, validFrom: raw.validFrom, validTo: raw.validTo, flyerUrl });
   }
   if (chain === 'kaufland') return offersFromPage(raw);
   if (chain === 'albert') return offersFromLeaflet(raw.pages, { validFrom: raw.validFrom, validTo: raw.validTo, slug: raw.slug });

@@ -20,7 +20,7 @@ const OLD = /^(\d{1,4})(?:,(\d{2}|-))\/$/;
 const PCT = /^-(\d{1,2})$/;
 const INT = /^\d{1,4}(,-)?$/;
 const DEC = /^(\d{2}|-)$/;
-const NONFOOD = /lampion|kost[yý]m|kniha|knížk|knizk|samolep|svíčk|svick|dekor|hrač|hrac|tričk|trick|ponožk|ponozk|polštář|polstar|ručník|rucnik|hrnek|talíř|talir|pánev|panev|baterie|žárovk|zarovk|led\b|náramk|naramk|čelenk|celenk|tetování|tetovani/i;
+export const NONFOOD = /lampion|kost[yý]m|kniha|knížk|knizk|samolep|svíčk|svick|dekor|hrač|hrac|tričk|trick|ponožk|ponozk|polštář|polstar|ručník|rucnik|hrnek|talíř|talir|pánev|panev|baterie|žárovk|zarovk|led\b|náramk|naramk|čelenk|celenk|tetování|tetovani|kanvic|konvic|rychlovarn|hrnc|hrnč|panvic|stolič|stolic|lampa|vankúš|vankus|uterák|uterak|obliečk|obliecka|deka\b/i;
 
 /** @param {string} s */
 const num = (s) => Number(String(s).replace(/\s/g, '').replace(',', '.'));
@@ -67,7 +67,7 @@ export function findBadges(items) {
  * Spojí kúsky textu na tom istom riadku tesne vedľa seba („•“ + „27,90 Kč“ → „• 27,90 Kč“).
  * @param {PdfItem[]} items @returns {PdfItem[]}
  */
-function mergeLine(items) {
+export function mergeLine(items) {
   const sorted = [...items].sort((a, b) => a[2] - b[2] || a[1] - b[1]);
   /** @type {PdfItem[]} */
   const out = [];
