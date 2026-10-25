@@ -1,5 +1,5 @@
 // Offline režim: kostra apky z cache, dáta vždy najprv zo siete (aby boli čerstvé).
-const VERSION = 'oplati-v1';
+const VERSION = 'oplati-v2';
 const SHELL = [
   './',
   'index.html',
@@ -11,6 +11,10 @@ const SHELL = [
   'js/format.js',
   'js/geo.js',
   'js/chains.js',
+  'fonts/cenovka-cn-bold.woff',
+  'o-aplikacii.html',
+  'ochrana-sukromia.html',
+  'podmienky.html',
 ];
 
 self.addEventListener('install', (event) => {

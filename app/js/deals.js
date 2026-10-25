@@ -24,7 +24,8 @@
  *   note?: string | null,
  *   tryIt?: string | null,
  *   matchKey?: string | null,
- *   sourceUrl?: string | null
+ *   sourceUrl?: string | null,
+ *   image?: string | null
  * }} Offer
  */
 /**

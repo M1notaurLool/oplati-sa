@@ -3,27 +3,36 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Oplatí sa</title>
+<title>Oplatí sa – skutočné zľavy na potraviny</title>
 <!-- preview:start -->
-<meta name="description" content="Skutočné zľavy nad 25 % v Kauflande, Lidli, Bille, Tescu a Alberte. Slovensko aj Česko, každé ráno aktualizované.">
-<meta name="theme-color" content="#0d6657">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-vvt4KWwuNr51XfE5m+hzeNEGhiOfZzG97ccfqGsPwvE='; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://overpass-api.de https://overpass.private.coffee; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="description" content="Len skutočné zľavy na potraviny od 25 % v Lidli, Bille, Tescu, Alberte a Kauflande. Slovensko aj Česko, najbližšia predajňa a nákupný zoznam. Každé ráno aktualizované.">
+<meta name="theme-color" content="#0b6b4f" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101a16" media="(prefers-color-scheme: dark)">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-vvt4KWwuNr51XfE5m+hzeNEGhiOfZzG97ccfqGsPwvE='; style-src 'self'; font-src 'self'; img-src 'self' data: https:; connect-src 'self' https://overpass-api.de https://overpass.private.coffee; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="sk_SK">
+<meta property="og:site_name" content="Oplatí sa">
+<meta property="og:title" content="Oplatí sa – skutočné zľavy na potraviny">
+<meta property="og:description" content="Ktoré akcie v Lidli, Bille, Tescu a Alberte sú naozaj výhodné – a kde je najbližšia predajňa.">
+<meta property="og:url" content="https://m1notaurlool.github.io/oplati-sa/">
+<meta property="og:image" content="https://m1notaurlool.github.io/oplati-sa/icon-512.png">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://m1notaurlool.github.io/oplati-sa/">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Oplatí sa">
 <!-- preview:end -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400..700&display=swap">
+<link rel="preload" href="fonts/cenovka-cn-bold.woff" as="font" type="font/woff" crossorigin>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<a class="skip" href="#view">Preskočiť na akcie</a>
 <header class="appbar">
   <div class="appbar__inner">
-    <a class="brand" href="#akcie" data-tab-link="deals">
+    <a class="brand" href="#akcie" data-tab-link="deals" aria-label="Oplatí sa – akcie">
       <svg viewBox="0 0 32 32" aria-hidden="true">
         <path class="logo-tag" d="M4 7.5A3.5 3.5 0 0 1 7.5 4h9.6a3.5 3.5 0 0 1 2.47 1.02l8.4 8.4a3.5 3.5 0 0 1 0 4.95l-9.6 9.6a3.5 3.5 0 0 1-4.95 0l-8.4-8.4A3.5 3.5 0 0 1 4 17.1Z"/>
         <circle class="logo-hole" cx="10" cy="10" r="2.2"/>
@@ -53,41 +62,41 @@
         <span class="badge" id="list-count" hidden></span>
       </button>
     </nav>
-    <div class="seg" role="group" aria-label="Krajina">
-      <button type="button" data-country="SK" aria-pressed="true">SK</button>
-      <button type="button" data-country="CZ" aria-pressed="false">CZ</button>
+    <div class="seg seg--country" role="group" aria-label="Krajina">
+      <button type="button" data-country="SK" aria-pressed="true"><span aria-hidden="true" class="flag-dot flag-dot--sk"></span>SK</button>
+      <button type="button" data-country="CZ" aria-pressed="false"><span aria-hidden="true" class="flag-dot flag-dot--cz"></span>CZ</button>
     </div>
   </div>
 </header>
 
-<main class="page">
+<main class="page" id="top">
   <p class="sample-note" id="sample-note" hidden></p>
   <section class="summary" id="summary" aria-live="polite"></section>
 
   <section class="filters" id="filters" aria-label="Filtre">
     <div class="filters__row">
-      <div class="seg" role="group" aria-label="Kedy nakupuješ">
+      <div class="seg seg--when" role="group" aria-label="Kedy nakupuješ">
         <button type="button" data-when="today" aria-pressed="true">Dnes</button>
         <button type="button" data-when="week" aria-pressed="false">Najbližších 7 dní</button>
       </div>
       <label class="search" for="q">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
         <span class="visually-hidden">Hľadať produkt</span>
-        <input id="q" type="search" placeholder="Hľadať, napr. maslo" autocomplete="off" enterkeyhint="search">
+        <input id="q" type="search" placeholder="Hľadať, napr. maslo, káva, kuracie" autocomplete="off" enterkeyhint="search">
       </label>
     </div>
     <div class="chips chips--scroll" id="chain-chips" role="group" aria-label="Reťazce"></div>
     <div class="chips chips--scroll" id="cat-chips" role="group" aria-label="Kategórie"></div>
     <details class="more" id="more">
-      <summary>Ďalšie filtre <span id="more-summary"></span></summary>
+      <summary><span>Ďalšie filtre</span> <span class="more__state" id="more-summary"></span></summary>
       <div class="more__body">
         <div class="range">
-          <label for="min">Minimálna reálna zľava <output id="min-out" for="min">25 %</output></label>
+          <label for="min">Minimálna skutočná zľava <output id="min-out" for="min">25 %</output></label>
           <input id="min" type="range" min="20" max="60" step="5" value="25">
         </div>
         <label class="switch" for="nocard">
           <input id="nocard" type="checkbox">
-          <span>Len akcie bez vernostnej karty<small>Skryje ceny, ktoré platia len s Lidl Plus, Kaufland Card a podobne.</small></span>
+          <span>Len akcie bez vernostnej karty<small>Skryje ceny, ktoré platia len s Lidl Plus, Clubcard, BILLA Bonus a podobne.</small></span>
         </label>
         <label class="switch" for="inflated">
           <input id="inflated" type="checkbox">
@@ -97,10 +106,28 @@
     </details>
   </section>
 
-  <section id="view"></section>
-
-  <footer class="foot" id="foot"></footer>
+  <section id="view" tabindex="-1"></section>
 </main>
+
+<footer class="site-foot" id="site-foot">
+  <div class="site-foot__inner">
+    <div class="site-foot__brand">
+      <p class="site-foot__name">Oplatí sa</p>
+      <p>Len zľavy, ktoré sú skutočne nižšie než najnižšia cena za posledných 30 dní.</p>
+    </div>
+    <nav class="site-foot__links" aria-label="Informácie">
+      <a href="o-aplikacii.html">O aplikácii</a>
+      <a href="ochrana-sukromia.html">Ochrana súkromia</a>
+      <a href="podmienky.html">Podmienky používania</a>
+      <a href="https://github.com/M1notaurLool/oplati-sa/issues" target="_blank" rel="noopener noreferrer">Nahlásiť chybu</a>
+    </nav>
+    <div class="site-foot__data" id="foot"></div>
+    <div class="site-foot__legal">
+      <p>Nie sme spojení s uvedenými obchodnými reťazcami. Názvy a ochranné známky patria ich vlastníkom.</p>
+      <p>© 2026 Oplatí sa. Všetky práva vyhradené.</p>
+    </div>
+  </div>
+</footer>
 
 <script type="module" src="js/app.js"></script>
 </body>

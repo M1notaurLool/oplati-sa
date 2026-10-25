@@ -66,6 +66,7 @@ const state = {
   /** @type {''|'loading'|'error'} */ nearbyStatus: '',
   confirmClear: false,
   loadError: '',
+  loading: true,
 };
 
 function savePrefs() {
@@ -104,6 +105,28 @@ function plural(n, [one, few, many]) {
   return many;
 }
 const AKCIE = /** @type {[string,string,string]} */ (['akcia', 'akcie', 'akcií']);
+
+/** Kreslené piktogramy kategórií (jedna hrúbka čiary) – keď produkt nemá obrázok alebo sa nenačíta. */
+const CAT_ICON = /** @type {Record<string, string>} */ ({
+  ovocie: '<path d="M12 7.6c-1.7-1.3-4.7-1.2-6.1 1-1.7 2.7-.6 7.3 1.7 9.7 1.3 1.4 2.6 1.6 4.4.9 1.8.7 3.1.5 4.4-.9 2.3-2.4 3.4-7 1.7-9.7-1.4-2.2-4.4-2.3-6.1-1Z"/><path d="M12 7.6c0-2.1.9-3.7 2.8-4.6"/>',
+  maso: '<path d="M5.3 14c-2-3.7.6-8.4 5.3-8.9 4.5-.5 9 2.3 8.5 6.6-.4 3.3-3.3 4.5-5.7 5-1.6.3-2.6 1.3-3.4 2.4-.9 1.2-2.8 1.1-3.4-.3L5.3 14Z"/><circle cx="14.1" cy="10.4" r="1.9"/>',
+  mliecne: '<path d="M7.5 9.2 9.6 4.5h4.8l2.1 4.7V19a1.5 1.5 0 0 1-1.5 1.5H9A1.5 1.5 0 0 1 7.5 19V9.2Z"/><path d="M7.5 9.2h9M10.5 13.5h3"/>',
+  pecivo: '<path d="M4.5 11.3c0-3 3.4-5 7.5-5s7.5 2 7.5 5c0 .9-.6 1.6-1.5 1.8V19a1.5 1.5 0 0 1-1.5 1.5H7.5A1.5 1.5 0 0 1 6 19v-5.9c-.9-.2-1.5-.9-1.5-1.8Z"/><path d="M9.2 10.2 10.6 12M13.2 9.6l1.4 1.8"/>',
+  trvanlive: '<path d="M8.5 3.5h7M8 6.5h8"/><path d="M7.5 6.5h9V19a1.5 1.5 0 0 1-1.5 1.5H9A1.5 1.5 0 0 1 7.5 19V6.5Z"/><path d="M7.5 11h9v5h-9"/>',
+  napoje: '<path d="M10 3.5h4M10.5 3.5v3.3L8.6 9.5a3 3 0 0 0-.6 1.8V19a1.5 1.5 0 0 0 1.5 1.5h5A1.5 1.5 0 0 0 16 19v-7.7a3 3 0 0 0-.6-1.8l-1.9-2.7V3.5"/><path d="M8 13.5h8"/>',
+  snacky: '<circle cx="12" cy="12" r="3.7"/><path d="M8.7 10.3 4.5 8v8l4.2-2.3M15.3 10.3 19.5 8v8l-4.2-2.3"/>',
+  mrazene: '<path d="M12 3.5v17M4.6 7.75l14.8 8.5M4.6 16.25l14.8-8.5"/><path d="M9.8 4.9 12 6.8l2.2-1.9M9.8 19.1 12 17.2l2.2 1.9"/>',
+  drogeria: '<path d="M10 3.5h3.6l1.6 1.6M11.6 3.5V7M9.2 7h4.8v2.4"/><path d="M7.5 11.5a2 2 0 0 1 2-2h4.5a2 2 0 0 1 2 2V19a1.5 1.5 0 0 1-1.5 1.5H9A1.5 1.5 0 0 1 7.5 19v-7.5Z"/>',
+  _: '<path d="M4 9.5h16l-1.6 9a1.5 1.5 0 0 1-1.5 1.2H7.1a1.5 1.5 0 0 1-1.5-1.2L4 9.5Z"/><path d="M8.5 9.5 11 4.5M15.5 9.5 13 4.5"/>',
+});
+/** @param {string} category */
+const catIcon = (category) => `<svg class="media__icon" viewBox="0 0 24 24" aria-hidden="true">${CAT_ICON[category] ?? CAT_ICON._}</svg>`;
+/** Nezalomiteľná medzera pred % a jednotkami („−68 %“ nikdy nie na dvoch riadkoch). */
+const NB = '\u00a0';
+/** Bezpečný kúsok triedy z dát (len malé písmená). @param {unknown} s */
+const cls = (s) => String(s ?? '').toLowerCase().replace(/[^a-z]/g, '');
+/** Počet s medzerami po tisícoch: 1 291. @param {number} n */
+const count = (n) => new Intl.NumberFormat('sk-SK').format(n);
 const POLOZKY = /** @type {[string,string,string]} */ (['položka', 'položky', 'položiek']);
 
 function listIds() {
@@ -135,14 +158,15 @@ function renderChrome() {
   badge.hidden = count === 0;
   badge.textContent = String(count);
 
-  const chains = chainsFor(state.country);
+  // reťazce s cenami najprv, bez cien na koniec
+  const chains = [...chainsFor(state.country)].sort((a, b) => Number(hasData(b, state.country)) - Number(hasData(a, state.country)));
   $('#chain-chips').innerHTML =
     chip('data-chain', '', 'Všetky reťazce', state.chains.size === 0) +
     chains
       .map((c) =>
         hasData(c, state.country)
-          ? chip('data-chain', c, chainName(c), state.chains.has(c))
-          : `<button type="button" class="chip chip--off" disabled title="${c === 'kaufland' ? 'Web Kauflandu vyžaduje overenie „nie som robot“, ceny sa nedajú sťahovať automaticky' : 'Pre tento reťazec teraz nie sú aktuálne ceny'}">${esc(chainName(c))} · bez cien</button>`,
+          ? chip('data-chain', c, chainName(c), state.chains.has(c), `<i class="dot chain--${cls(c)}" aria-hidden="true"></i>`)
+          : `<button type="button" class="chip chip--off" disabled title="Pre tento reťazec teraz nie sú aktuálne ceny"><i class="dot chain--${cls(c)}" aria-hidden="true"></i>${esc(chainName(c))}<span class="chip__note">bez cien</span></button>`,
       )
       .join('');
   $('#cat-chips').innerHTML =
@@ -150,10 +174,10 @@ function renderChrome() {
     CATEGORIES.map((c) => chip('data-cat', c.id, c.name, state.categories.has(c.id))).join('');
 
   /** @type {HTMLInputElement} */ ($('#min')).value = String(state.minDiscount);
-  $('#min-out').textContent = `${state.minDiscount} %`;
+  $('#min-out').textContent = `${state.minDiscount}${NB}%`;
   /** @type {HTMLInputElement} */ ($('#nocard')).checked = state.noCard;
   /** @type {HTMLInputElement} */ ($('#inflated')).checked = state.showInflated;
-  const extras = [`od ${state.minDiscount} %`];
+  const extras = [`od ${state.minDiscount}${NB}%`];
   if (state.noCard) extras.push('bez karty');
   if (state.showInflated) extras.push('aj nafúknuté');
   $('#more-summary').textContent = extras.join(', ');
@@ -167,9 +191,9 @@ function hasData(chain, country) {
   return Boolean(state.meta.sources[`${chain}-${country}`]?.ok);
 }
 
-/** @param {string} attr @param {string} value @param {string} label @param {boolean} pressed */
-function chip(attr, value, label, pressed) {
-  return `<button type="button" class="chip" ${attr}="${esc(value)}" aria-pressed="${pressed}">${esc(label)}</button>`;
+/** @param {string} attr @param {string} value @param {string} label @param {boolean} pressed @param {string} [lead] dôveryhodný HTML kúsok pred textom (ikona) */
+function chip(attr, value, label, pressed, lead = '') {
+  return `<button type="button" class="chip" ${attr}="${esc(value)}" aria-pressed="${pressed}">${lead}${esc(label)}</button>`;
 }
 
 function renderView() {
@@ -178,6 +202,12 @@ function renderView() {
   if (state.loadError) {
     summary.innerHTML = '<h2>Akcie sa nepodarilo načítať</h2>';
     view.innerHTML = `<div class="empty"><p>${esc(state.loadError)}</p><div class="btn-row"><button type="button" class="btn btn--primary" data-action="reload">Skúsiť znova</button></div></div>`;
+    return;
+  }
+  if (state.loading && state.tab !== 'list') {
+    summary.innerHTML = '<h1 class="summary__title">Načítavam akcie…</h1><p>Porovnávam ceny s najnižšími za posledných 30 dní.</p>';
+    const ghost = '<div class="deal deal--skeleton"><div class="deal__media"><div class="media"></div></div><div class="deal__main"><span class="sk sk--title"></span><span class="sk sk--line"></span><span class="sk sk--price"></span></div></div>';
+    view.innerHTML = `<div class="grid" aria-hidden="true">${ghost.repeat(6)}</div>`;
     return;
   }
   if (state.tab === 'list') return renderList(summary, view);
@@ -194,15 +224,15 @@ function renderDeals(summary, view, onlyTry) {
   const whenText = state.when === 'today' ? 'platí dnes' : 'na najbližších 7 dní';
 
   if (onlyTry) {
-    summary.innerHTML = `<h2>Oplatí sa vyskúšať</h2><p>Novinky, tematické týždne a lepšia kvalita za cenu, pri ktorej nič neriskuješ.</p>`;
+    summary.innerHTML = `<h1 class="summary__title">Oplatí sa vyskúšať</h1><p>Novinky, tematické týždne a lepšia kvalita za cenu, pri ktorej nič neriskuješ.</p>`;
   } else if (visible.length) {
     const top = chainSummary(visible)[0];
     const best = sortOffers(visible, 'discount')[0];
     const bestPct = discountInfo(best).real ?? 0;
-    summary.innerHTML = `<h2><em>${visible.length}</em> ${plural(visible.length, AKCIE)} so skutočnou zľavou od ${state.minDiscount} % ${whenText}</h2>
-      <p>Najviac ich má ${esc(chainName(top.chain))}. Najväčšia zľava: −${bestPct} % na ${esc(best.name)} (${esc(chainName(best.chain))}).</p>`;
+    summary.innerHTML = `<h1 class="summary__title"><span class="summary__num">${count(visible.length)}</span> ${plural(visible.length, AKCIE)} so skutočnou zľavou od ${state.minDiscount}${NB}% ${whenText}</h1>
+      <p>Najviac ich má <b>${esc(chainName(top.chain))}</b>. Najväčšia zľava je −${bestPct}${NB}% na ${esc(best.name)} (${esc(chainName(best.chain))}).</p>`;
   } else {
-    summary.innerHTML = `<h2>Žiadna akcia od ${state.minDiscount} % ${whenText}</h2>`;
+    summary.innerHTML = `<h1 class="summary__title">Žiadna akcia od ${state.minDiscount}${NB}% ${whenText}</h1>`;
   }
 
   if (!visible.length) {
@@ -223,22 +253,30 @@ function renderDeals(summary, view, onlyTry) {
   const more = rest
     ? `<div class="more-row"><button type="button" class="btn btn--primary" data-action="more">Zobraziť ďalšie (${Math.min(rest, PAGE)} z ${rest})</button></div>`
     : '';
-  view.innerHTML = `<div class="results-head"><p>${visible.length} ${plural(visible.length, AKCIE)}</p>${sortSelect}</div>
-    <div class="grid">${shown.map((o) => card(o, cmp)).join('')}</div>${more}`;
+  view.innerHTML = `<h2 class="visually-hidden">Zoznam akcií</h2><div class="results-head"><p>${count(visible.length)} ${plural(visible.length, AKCIE)}</p><div class="sort">${sortSelect}</div></div>
+    <div class="grid">${shown.map((o) => card(o, cmp, onlyTry)).join('')}</div>${more}`;
 }
 
 /** @param {boolean} onlyTry */
 function emptyDeals(onlyTry) {
   const tips = [];
   if (state.when === 'today') tips.push('<button type="button" class="btn btn--primary" data-action="week">Ukázať najbližších 7 dní</button>');
-  if (state.minDiscount > 20) tips.push('<button type="button" class="btn" data-action="min20">Znížiť hranicu na 20 %</button>');
+  if (state.minDiscount > 20) tips.push(`<button type="button" class="btn" data-action="min20">Znížiť hranicu na 20${NB}%</button>`);
   if (state.chains.size || state.categories.size || state.query || state.noCard) tips.push('<button type="button" class="btn" data-action="reset">Zrušiť filtre</button>');
   const what = onlyTry ? 'Na vyskúšanie teraz nič nevyhovuje filtrom.' : 'Pri týchto filtroch nie je žiadna akcia so skutočnou zľavou.';
-  return `<div class="empty"><h3>${what}</h3><p>Akcie sa menia väčšinou v pondelok, stredu a štvrtok, keď vychádzajú nové letáky.</p><div class="btn-row">${tips.join('')}</div></div>`;
+  return `<div class="empty"><span class="empty__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg></span><h2>${what}</h2><p>Akcie sa menia väčšinou v stredu a vo štvrtok, keď vychádzajú nové letáky. Skús širší výber:</p><div class="btn-row">${tips.join('')}</div></div>`;
+}
+
+/** Obrázok produktu, alebo ikona kategórie, keď obrázok nie je (či sa nenačíta). @param {Offer} o */
+function media(o) {
+  const img = safeUrl(o.image);
+  return `<div class="media media--${cls(o.category)}${img ? ' media--photo' : ''}">${catIcon(o.category)}${
+    img ? `<img class="media__img" src="${esc(img)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : ''
+  }</div>`;
 }
 
 /** @param {Offer} o @param {ReturnType<typeof compareAcrossChains>} cmp */
-function card(o, cmp) {
+function card(o, cmp, onlyTry = false) {
   const d = discountInfo(o);
   const v = validity(o, today);
   const up = unitPrice(o);
@@ -249,32 +287,44 @@ function card(o, cmp) {
 
   const flags = [];
   const tryText = tryReason(o);
-  if (tryText) flags.push(`<li class="flag flag--try">${esc(tryText)}</li>`);
-  if (o.requiresCard) flags.push(`<li class="flag flag--card">s ${esc(cardName(o.chain, o.country))}</li>`);
-  if (o.requiresCard && o.priceWithoutCard) flags.push(`<li class="flag">bez karty ${money(o.priceWithoutCard, o.country)}</li>`);
-  if (o.note) flags.push(`<li class="flag flag--card">${esc(o.note)}</li>`);
-  if (d.inflated) flags.push(`<li class="flag flag--warn">leták −${d.claimed} %, reálne −${d.real} %</li>`);
   const c = cmp.get(o.id);
-  if (c?.isCheapest) flags.push(`<li class="flag flag--best">najlacnejšie z ${c.count} reťazcov</li>`);
-  else if (c) flags.push(`<li class="flag">lacnejšie v ${esc(chainName(c.cheapest.chain))}: ${esc(unitLabel(unitPrice(c.cheapest), o.country) || money(c.cheapest.price, o.country))}</li>`);
+  if (c?.isCheapest) flags.push(`<li class="flag flag--best">Najlacnejšie z ${c.count} reťazcov</li>`);
+  else if (c) flags.push(`<li class="flag">Lacnejšie v ${esc(chainName(c.cheapest.chain))}: ${esc(unitLabel(unitPrice(c.cheapest), o.country) || money(c.cheapest.price, o.country))}</li>`);
+  if (o.requiresCard) flags.push(`<li class="flag flag--card">S kartou ${esc(cardName(o.chain, o.country))}${o.priceWithoutCard ? `, bez nej ${money(o.priceWithoutCard, o.country)}` : ''}</li>`);
+  if (o.note) flags.push(`<li class="flag flag--card">${esc(o.note)}</li>`);
+  if (d.inflated) flags.push(`<li class="flag flag--warn">Leták hlási −${d.claimed}${NB}%, reálne je to −${d.real}${NB}%</li>`);
+  // dôvod „vyskúšať“ len v záložke Vyskúšať – v hlavnom zozname by bol pri každej druhej akcii
+  if (tryText && onlyTry) flags.push(`<li class="flag flag--try">${esc(tryText)}</li>`);
 
-  const meta = [o.brand, sizeLabel(o.size)].filter(Boolean).map(esc).join(' · ');
+  const meta = [o.brand, sizeLabel(o.size)].filter(Boolean).map(esc).join(', ');
   const src = safeUrl(o.sourceUrl);
-  const srcLink = src ? ` · <a href="${esc(src)}" target="_blank" rel="noopener noreferrer">na webe ${esc(chainName(o.chain))}</a>` : '';
+  const chain = cls(o.chain);
 
-  return `<article class="deal">
-    <div class="sticker${weak ? ' sticker--warn' : ''}" title="Skutočná zľava ${pctShown} % ${basisText}" aria-label="Zľava ${pctShown} percent"><b>−${pctShown}</b><small>%</small></div>
-    <div class="deal__body">
+  return `<article class="deal chain--${chain}">
+    <div class="deal__media">
+      ${media(o)}
+      <p class="sticker${weak ? ' sticker--warn' : ''}" title="Skutočná zľava ${pctShown}${NB}% ${basisText}"><span class="visually-hidden">Zľava </span><b>−${pctShown}</b><small>%</small></p>
+    </div>
+    <div class="deal__main">
       <h3 class="deal__name">${esc(o.name)}</h3>
-      <p class="deal__meta">${meta}${srcLink}</p>
-      <p class="deal__where"><span class="chain">${esc(chainName(o.chain))}</span><span class="when when--${v.tone}">${esc(v.text)}</span></p>
+      ${meta ? `<p class="deal__meta">${meta}</p>` : ''}
+      <p class="deal__prices"><span class="price">${money(o.price, o.country)}</span>${
+        o.regularPrice ? ` <s class="was"><span class="visually-hidden">pôvodne </span>${money(o.regularPrice, o.country)}</s>` : ''
+      }</p>
+      ${up ? `<p class="unit">${esc(unitLabel(up, o.country))}</p>` : ''}
       ${flags.length ? `<ul class="flags">${flags.join('')}</ul>` : ''}
     </div>
-    <div class="deal__price">
-      <p class="price">${money(o.price, o.country)}</p>
-      ${o.regularPrice ? `<p class="was"><s>${money(o.regularPrice, o.country)}</s></p>` : ''}
-      ${up ? `<p class="unit">${esc(unitLabel(up, o.country))}</p>` : ''}
-      <button type="button" class="add" data-add="${esc(o.id)}" aria-pressed="${inList}" aria-label="${inList ? 'Odobrať zo zoznamu' : 'Pridať do zoznamu'}: ${esc(o.name)}">${inList ? 'V zozname' : '+ Zoznam'}</button>
+    <div class="deal__foot">
+      <p class="deal__where"><span class="store"><i class="dot chain--${chain}" aria-hidden="true"></i>${esc(chainName(o.chain))}</span><span class="when when--${v.tone}">${esc(v.text)}</span></p>
+      <div class="deal__actions">${
+        src
+          ? `<a class="icon-btn src" href="${esc(src)}" target="_blank" rel="noopener noreferrer" title="Overiť cenu na webe ${esc(chainName(o.chain))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 4.5h6v6M19.5 4.5 11 13M17 13.5v4.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 5 18v-9a1.5 1.5 0 0 1 1.5-1.5H11"/></svg><span class="visually-hidden">Overiť cenu na webe ${esc(chainName(o.chain))}</span></a>`
+          : ''
+      }<button type="button" class="add" data-add="${esc(o.id)}" aria-pressed="${inList}" aria-label="${inList ? 'Odobrať zo zoznamu' : 'Pridať do zoznamu'}: ${esc(o.name)}">${
+        inList
+          ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7"/></svg>V zozname'
+          : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Do zoznamu'
+      }</button></div>
     </div>
   </article>`;
 }
@@ -289,7 +339,7 @@ function nearBlock(chain) {
   const near = state.pos ? nearestByChain(allStores(), state.pos, state.country).get(chain) : undefined;
   if (near && near.km < 40) {
     const where = [near.store.address, near.store.city].filter(Boolean).map(esc).join(', ');
-    return `<div class="near"><p><b>${distance(near.km)}</b> · ${esc(near.store.name ?? chainName(chain))}${where ? `<small>${where}</small>` : ''}</p>
+    return `<div class="near"><p><b>${distance(near.km)}</b> ${esc(near.store.name ?? chainName(chain))}${where ? `<small>${where}</small>` : ''}</p>
       <a class="btn" href="${esc(directionsLink(near.store))}" target="_blank" rel="noopener noreferrer">Navigovať</a></div>`;
   }
   const label = state.pos?.label ? `v okolí: ${esc(state.pos.label)}` : 'v okolí';
@@ -313,14 +363,14 @@ function renderStores(summary, view) {
   const rows = chainSummary(visible);
   const whenText = state.when === 'today' ? 'dnes' : 'tento týždeň';
   summary.innerHTML = rows.length
-    ? `<h2>${whenText === 'dnes' ? 'Dnes' : 'Tento týždeň'} sa najviac oplatí <em>${esc(chainName(rows[0].chain))}</em></h2>
+    ? `<h1 class="summary__title">${whenText === 'dnes' ? 'Dnes' : 'Tento týždeň'} sa najviac oplatí ${esc(chainName(rows[0].chain))}</h1>
        <p>Poradie podľa počtu akcií so skutočnou zľavou od ${state.minDiscount} % a ich veľkosti.</p>`
-    : `<h2>Žiadny reťazec nemá ${whenText} akcie od ${state.minDiscount} %</h2>`;
+    : `<h1 class="summary__title">Žiadny reťazec nemá ${whenText} akcie od ${state.minDiscount}${NB}%</h1>`;
 
   const cities = CITIES.filter((c) => c.country === state.country);
   const selected = state.pos?.label ?? '';
   const locate = `<div class="locate">
-      <button type="button" class="btn btn--primary" data-action="locate">Použiť moju polohu</button>
+      <button type="button" class="btn btn--primary" data-action="locate"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg>Použiť moju polohu</button>
       <label class="visually-hidden" for="city">Mesto</label>
       <select id="city">
         <option value="">${state.pos && !state.pos.label ? 'Moja poloha' : 'alebo vyber mesto'}</option>
@@ -331,15 +381,15 @@ function renderStores(summary, view) {
 
   const ranking = rows
     .map(
-      (r, i) => `<li class="rank">
-        <div class="rank__head"><span class="rank__pos">${i + 1}.</span><h3>${esc(chainName(r.chain))}</h3></div>
+      (r, i) => `<li class="rank chain--${cls(r.chain)}">
+        <div class="rank__head"><span class="rank__pos">${i + 1}.</span><h2><i class="dot chain--${cls(r.chain)}" aria-hidden="true"></i>${esc(chainName(r.chain))}</h2></div>
         <dl class="stats">
-          <div><dt>Akcie</dt><dd>${r.count}</dd></div>
-          <div><dt>Priemer</dt><dd>−${r.avgDiscount} %</dd></div>
+          <div><dt>Akcie</dt><dd>${count(r.count)}</dd></div>
+          <div><dt>Priemer</dt><dd>−${r.avgDiscount}${NB}%</dd></div>
           <div><dt>Ušetríš</dt><dd>${money(r.totalSavings, state.country)}</dd></div>
         </dl>
         <ul class="top3">${r.top
-          .map((o) => `<li><span>${esc(o.name)}</span><b>−${discountInfo(o).real ?? 0} %</b></li>`)
+          .map((o) => `<li><span>${esc(o.name)}</span><b>−${discountInfo(o).real ?? 0}${NB}%</b></li>`)
           .join('')}</ul>
         ${nearBlock(r.chain)}
       </li>`,
@@ -361,24 +411,24 @@ function renderList(summary, view) {
   const groups = groupList(/** @type {Offer[]} */ (items));
   const saved = groups.reduce((a, g) => a + g.saved, 0);
   summary.innerHTML = items.length
-    ? `<h2>Môj zoznam: ušetríš <em>${money(saved, state.country)}</em></h2><p>${items.length} ${plural(items.length, POLOZKY)} v ${groups.length} ${plural(groups.length, ['obchode', 'obchodoch', 'obchodoch'])}. Zoznam ostáva len v tomto zariadení.</p>`
-    : `<h2>Nákupný zoznam je prázdny</h2>`;
+    ? `<h1 class="summary__title">Môj zoznam: ušetríš <span class="summary__num">${money(saved, state.country)}</span></h1><p>${items.length} ${plural(items.length, POLOZKY)} v ${groups.length} ${plural(groups.length, ['obchode', 'obchodoch', 'obchodoch'])}. Zoznam ostáva len v tomto zariadení.</p>`
+    : `<h1 class="summary__title">Nákupný zoznam je prázdny</h1>`;
 
   if (!items.length) {
-    view.innerHTML = `<div class="empty"><p>Pri akcii ťukni na <b>+ Zoznam</b>. Tu potom uvidíš, čo kúpiť v ktorom obchode a koľko ušetríš.</p>
+    view.innerHTML = `<div class="empty"><span class="empty__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3.5 4.5h2.2l2 10.5h10.2l1.8-7.5H7"/><circle cx="9.5" cy="19" r="1.3"/><circle cx="16.5" cy="19" r="1.3"/></svg></span><h2>Zatiaľ tu nič nie je</h2><p>Pri akcii ťukni na <b>Do zoznamu</b>. Tu potom uvidíš, čo kúpiť v ktorom obchode a koľko ušetríš.</p>
       <div class="btn-row"><button type="button" class="btn btn--primary" data-tab="deals">Prejsť na akcie</button></div></div>`;
     return;
   }
   const groupHtml = groups
     .map(
-      (g) => `<section class="list-group">
-        <div class="list-group__head"><div><h3>${esc(chainName(g.chain))}</h3>
-          <p>${g.items.length} ${plural(g.items.length, POLOZKY)} · ${money(g.total, state.country)} · ušetríš ${money(g.saved, state.country)}</p></div></div>
+      (g) => `<section class="list-group chain--${cls(g.chain)}">
+        <div class="list-group__head"><div><h2><i class="dot chain--${cls(g.chain)}" aria-hidden="true"></i>${esc(chainName(g.chain))}</h2>
+          <p>${g.items.length} ${plural(g.items.length, POLOZKY)} za ${money(g.total, state.country)}, ušetríš ${money(g.saved, state.country)}</p></div></div>
         <ul class="list-items">${g.items
           .map((o) => {
             const expired = o.validTo < today;
             const v = expired ? 'akcia skončila' : validity(o, today).text;
-            return `<li class="${expired ? 'expired' : ''}"><span class="name">${esc(o.name)}<small>${esc([sizeLabel(o.size), v].filter(Boolean).join(' · '))}</small></span>
+            return `<li class="${expired ? 'expired' : ''}"><span class="thumb">${media(o)}</span><span class="name">${esc(o.name)}<small>${esc([sizeLabel(o.size), v].filter(Boolean).join(', '))}</small></span>
               <span class="amount">${money(o.price, o.country)}</span>
               <button type="button" class="icon-btn" data-remove="${esc(o.id)}" aria-label="Odobrať ${esc(o.name)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></li>`;
           })
@@ -396,7 +446,7 @@ function renderList(summary, view) {
 function renderFoot() {
   const when = state.meta.generatedAt ? new Date(state.meta.generatedAt) : null;
   const stamp = when && !Number.isNaN(when.getTime())
-    ? when.toLocaleString('sk-SK', { weekday: 'short', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' })
+    ? when.toLocaleString('sk-SK', { weekday: 'long', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' })
     : 'neznáme';
   const fmt = (/** @type {string} */ iso) => {
     const d = new Date(iso);
@@ -406,10 +456,10 @@ function renderFoot() {
     .filter(([, s]) => s?.ok)
     .map(([k, s]) => {
       const [chain, country] = k.split('-');
-      return `${chainName(chain)} ${country} (${fmt(s.fetchedAt)})`;
+      return `<li><i class="dot chain--${cls(chain)}" aria-hidden="true"></i>${esc(chainName(chain))} ${esc(country)}<span>${esc(fmt(s.fetchedAt))}</span></li>`;
     });
-  const sourcesText = live.length ? ` Zdroje: ${live.map(esc).join(', ')}.` : '';
-  $('#foot').innerHTML = `<p>Akcie aktualizované: ${esc(stamp)}.${sourcesText} Ceny sú z webov reťazcov, pred nákupom ich over v predajni.</p>
+  $('#foot').innerHTML = `<p><b>Akcie aktualizované:</b> ${esc(stamp)}. Ceny sú z webov reťazcov, pred nákupom ich over v predajni.</p>
+    ${live.length ? `<ul class="sources" aria-label="Zdroje cien">${live.join('')}</ul>` : ''}
     <p>Polohy predajní © prispievatelia <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>.</p>`;
   const note = $('#sample-note');
   note.hidden = !state.meta.sample;
@@ -496,6 +546,14 @@ function goTab(tab) {
   window.scrollTo({ top: 0 });
 }
 
+/** Odznak pri „Zoznam“ krátko poskočí, keď v ňom pribudne položka (len ak používateľ nevypol animácie). */
+function bumpBadge() {
+  const badge = $('#list-count');
+  badge.classList.remove('badge--bump');
+  void badge.offsetWidth; // reštart animácie
+  badge.classList.add('badge--bump');
+}
+
 /** @param {string} id */
 function toggleList(id) {
   const ids = listIds();
@@ -538,8 +596,11 @@ document.addEventListener('click', (e) => {
     return render();
   }
   if (d.add) {
+    const adding = !listIds().includes(d.add);
     toggleList(d.add);
-    return render();
+    render();
+    if (adding) bumpBadge();
+    return;
   }
   if (d.remove) {
     toggleList(d.remove);
@@ -621,6 +682,26 @@ document.addEventListener('change', (e) => {
     render();
   }
 });
+// Obrázok produktu: kým sa nenačíta, vidno ikonu kategórie; keď sa nenačíta vôbec (zmazaný, blokovaný), ikona ostane.
+document.addEventListener(
+  'load',
+  (e) => {
+    const img = e.target;
+    if (img instanceof HTMLImageElement && img.classList.contains('media__img')) img.closest('.media')?.classList.add('media--loaded');
+  },
+  true,
+);
+document.addEventListener(
+  'error',
+  (e) => {
+    const img = e.target;
+    if (img instanceof HTMLImageElement && img.classList.contains('media__img')) {
+      img.closest('.media')?.classList.remove('media--photo');
+      img.remove();
+    }
+  },
+  true,
+);
 window.addEventListener('hashchange', () => {
   const tab = HASH_TAB[location.hash.slice(1)];
   if (tab && tab !== state.tab) goTab(tab);
@@ -656,6 +737,7 @@ async function start() {
   } catch (err) {
     state.loadError = err instanceof Error ? err.message : 'Neznáma chyba.';
   }
+  state.loading = false;
   renderFoot();
   render();
   loadNearby();
